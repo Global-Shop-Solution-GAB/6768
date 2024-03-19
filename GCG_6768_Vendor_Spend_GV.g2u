@@ -1,0 +1,785 @@
+Program.Sub.ScreenSU.Start
+Gui.fmVendSpend..Create
+Gui.fmVendSpend..Caption("Vendor Spend Gridview")
+Gui.fmVendSpend..Size(20640,10695)
+Gui.fmVendSpend..MinX(0)
+Gui.fmVendSpend..MinY(0)
+Gui.fmVendSpend..Position(0,0)
+Gui.fmVendSpend..BackColor(-2147483633)
+Gui.fmVendSpend..MousePointer(0)
+Gui.fmVendSpend..Event(UnLoad,fmVendSpend_UnLoad)
+Gui.fmVendSpend.cmdREFRESH.Create(Button)
+Gui.fmVendSpend.cmdREFRESH.Size(450,375)
+Gui.fmVendSpend.cmdREFRESH.Position(19860,90)
+Gui.fmVendSpend.cmdREFRESH.Caption("REFRESH")
+Gui.fmVendSpend.cmdREFRESH.Event(Click,cmdREFRESH_Click)
+Gui.fmVendSpend.cmdREFRESH.Anchor(9)
+Gui.fmVendSpend.cmdREFRESH.TabStop(True)
+Gui.fmVendSpend.cmdREFRESH.TabIndex(7)
+Gui.fmVendSpend.lblSDate.Create(Label,"Starting Date:",True,1245,255,0,600,360,True,0,"Arial",8,-2147483633,0)
+Gui.fmVendSpend.lblSDate.FontStyle(True,False,False,False,False)
+Gui.fmVendSpend.lblEDate.Create(Label,"Ending Date:",True,1155,255,0,4380,360,True,0,"Arial",8,-2147483633,0)
+Gui.fmVendSpend.lblEDate.FontStyle(True,False,False,False,False)
+Gui.fmVendSpend.dtpSDate.Create(DatePicker)
+Gui.fmVendSpend.dtpSDate.Size(1935,285)
+Gui.fmVendSpend.dtpSDate.Position(1890,270)
+Gui.fmVendSpend.dtpSDate.TabStop(True)
+Gui.fmVendSpend.dtpSDate.TabIndex(1)
+Gui.fmVendSpend.dtpEDate.Create(DatePicker)
+Gui.fmVendSpend.dtpEDate.Size(1935,285)
+Gui.fmVendSpend.dtpEDate.Position(5580,270)
+Gui.fmVendSpend.dtpEDate.TabStop(True)
+Gui.fmVendSpend.dtpEDate.TabIndex(2)
+Gui.fmVendSpend.cmdExport.Create(Button)
+Gui.fmVendSpend.cmdExport.Size(855,375)
+Gui.fmVendSpend.cmdExport.Position(18945,90)
+Gui.fmVendSpend.cmdExport.Anchor(9)
+Gui.fmVendSpend.cmdExport.Caption("EXPORT")
+Gui.fmVendSpend.cmdExport.FontStyle(True,False,False,False,False)
+Gui.fmVendSpend.cmdExport.Event(Click,cmdExport_Click)
+Gui.fmVendSpend.cmdExport.TabStop(True)
+Gui.fmVendSpend.cmdExport.TabIndex(6)
+Gui.fmVendSpend.lblSDate2.Create(Label,"Vendor:",True,765,255,0,8070,360,True,0,"Arial",8,-2147483633,0)
+Gui.fmVendSpend.lblSDate2.FontStyle(True,False,False,False,False)
+Gui.fmVendSpend.ddlVend.Create(DropDownList)
+Gui.fmVendSpend.ddlVend.Size(1260,330)
+Gui.fmVendSpend.ddlVend.Position(8880,255)
+Gui.fmVendSpend.ddlVend.TabStop(True)
+Gui.fmVendSpend.ddlVend.TabIndex(3)
+Gui.fmVendSpend.ddlVend.Event(LostFocus,ddlVend_LostFocus)
+Gui.fmVendSpend.txtVend.Create(TextBox,"",True,2805,300,0,10260,270,True,0,"Arial",8,-2147483643,1)
+Gui.fmVendSpend.txtVend.TabStop(True)
+Gui.fmVendSpend.txtVend.TabIndex(4)
+Gui.fmVendSpend.txtVend.Locked(True)
+Gui.fmVendSpend.chkSort.Create(CheckBox)
+Gui.fmVendSpend.chkSort.Size(1845,360)
+Gui.fmVendSpend.chkSort.Position(13185,60)
+Gui.fmVendSpend.chkSort.Caption("By Product Line")
+Gui.fmVendSpend.chkSort.FontStyle(True,False,False,False,False)
+Gui.fmVendSpend.chkSort.Event(Click,chkSort_Click)
+Gui.fmVendSpend.chkVend.Create(CheckBox)
+Gui.fmVendSpend.chkVend.Size(1560,360)
+Gui.fmVendSpend.chkVend.Position(13185,435)
+Gui.fmVendSpend.chkVend.Caption("By Vendor")
+Gui.fmVendSpend.chkVend.FontStyle(True,False,False,False,False)
+Gui.fmVendSpend.chkVend.Event(Click,chkVend_Click)
+Gui.fmVendSpend.GsGcVendSpend.Create(GsGridControl)
+Gui.fmVendSpend.GsGcVendSpend.Size(20085,8910)
+Gui.fmVendSpend.GsGcVendSpend.Position(105,915)
+Gui.fmVendSpend.GsGcVendSpend.Anchor(15)
+Gui.fmVendSpend.GsGcVendSpend.TabStop(True)
+Gui.fmVendSpend.GsGcVendSpend.TabIndex(5)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+v.Global.sGVR.Declare
+v.Global.sRptType.Declare
+v.Global.sRptCat.Declare
+v.Global.sProcFolder.Declare
+v.Global.sProcFile.Declare
+v.Global.sFile.Declare
+v.Global.iIndex.Declare
+v.Global.sDDL.Declare
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'Robert Cole 05/24/2022
+'Added/ Changed:
+
+v.Local.dSDate.Declare
+v.Local.dEDate.Declare
+
+f.Intrinsic.Control.CallSub(Directory_Check)
+
+'POPULATE DATEPICKERS FOR THE START AND END OF THE WEEK PRIOR
+f.Intrinsic.Date.DateAdd("d",-30,v.Ambient.Date,v.Local.dSDate)
+f.Intrinsic.Date.BeginningOfWeek(v.Local.dSDate,v.Local.dSDate)
+gui.fmVendSpend.dtpSDate.Value(v.Local.dSDate)
+'gui.fmVendSpend.dtpSDate.Value("1/1/1900")
+f.Intrinsic.Date.DateAdd("d",-7,v.Ambient.Date,v.Local.dEDate)
+f.Intrinsic.Date.EndOfWeek(v.Local.dEDate,v.Local.dEDate)
+gui.fmVendSpend.dtpEDate.Value(v.Local.dEDate)
+
+f.Intrinsic.Control.CallSub(SetContextMenus)
+
+f.Intrinsic.Control.CallSub(ddlPopulate)
+gui.fmVendSpend.ddlVend.Text("ALL")
+gui.fmVendSpend.txtVend.Text("All Vendors")
+
+gui.fmVendSpend.chkSort.Value(1)
+v.Global.sRptCat.Set("D")
+
+f.Intrinsic.UI.InvokeWaitDialog("Please Wait...Loading...","Loading...")
+f.Intrinsic.Control.CallSub(dtLoad)
+
+f.Intrinsic.Control.CallSub(gvFormat)
+f.Intrinsic.UI.CloseWaitDialog
+
+gui.fmVendSpend..Visible(true)
+Program.Sub.Main.End
+
+Program.Sub.SetContextMenus.Start
+'POPULATE CONTEXT MENUS FOR THE GRIDVIEW
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+gui.fmVendSpend..ContextMenuCreate("ctxVendSpend")
+gui.fmVendSpend..ContextMenuAddItem("ctxVendSpend","Export",0,"Export")
+gui.fmVendSpend..ContextMenuSetItemEventHandler("ctxVendSpend","Export","cmdEXPORT_Click")
+gui.fmVendSpend..ContextMenuAddItem("ctxVendSpend","Refresh",0,"Refresh")
+gui.fmVendSpend..ContextMenuSetItemEventHandler("ctxVendSpend","Refresh","cmdREFRESH_Click")
+gui.fmVendSpend.GsGcVendSpend.ContextMenuAttach("ctxVendSpend")
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.SetContextMenus.End
+
+Program.Sub.cmdExport_Click.Start
+'EXPORT THE GRIDVIEW TO AN EXCEL SHEET AND OPEN THE FILE
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+v.Local.sOutFile.Declare(String)
+v.Local.sDate.Declare(String)
+v.Local.sTime.Declare(String)
+v.Local.iCount.Declare
+v.Local.sMsg.Declare(String)
+v.Local.bCheck.Declare(boolean)
+V.Local.sFileExport.Declare(String)
+
+gui.fmVendSpend.GsGcVendSpend.GetRowCount("gvVendSpend",v.Local.iCount)
+
+Function.Intrinsic.Control.BlockEvents
+gui.fmVendSpend..Enabled(false)
+f.Intrinsic.Control.If(v.Local.iCount,=,0)
+	f.Intrinsic.UI.Msgbox("No rows in grid to export!")
+	gui.fmVendSpend..SetFocus
+	gui.fmVendSpend..Enabled(True)
+	Function.Intrinsic.Control.UnblockEvents
+	f.Intrinsic.Control.ExitSub
+f.Intrinsic.Control.EndIf
+
+f.Intrinsic.String.Format(v.Ambient.Date,"MMDDYYYY",v.Local.sDate)
+f.Intrinsic.String.Format(v.Ambient.Now,"HhNn",v.Local.sTime)
+
+f.Intrinsic.Control.SelectCase(v.Global.sRptCat)
+
+f.Intrinsic.Control.Case("D")
+	f.Intrinsic.String.Build("{0}\CUSTOM\6768\EXPORTS\VendorSpend_by_PL_{1}_{2}.xlsx",v.Caller.GlobalDir,v.Local.sDate.trim,v.Local.sTime.Trim,V.Local.sFileExport)
+	f.Intrinsic.File.Exists(v.Local.sFileExport,v.Local.bCheck)
+	f.Intrinsic.Control.If(v.Local.bCheck,=,true)
+		f.Intrinsic.File.DeleteFile(v.Local.sFileExport)
+	f.Intrinsic.Control.EndIf
+	
+f.Intrinsic.Control.Case("R")
+	f.Intrinsic.String.Build("{0}\CUSTOM\6768\EXPORTS\VendorSpend_by_Vendor_{1}_{2}.xlsx",v.Caller.GlobalDir,v.Local.sDate.trim,v.Local.sTime.Trim,V.Local.sFileExport)
+	f.Intrinsic.File.Exists(v.Local.sFileExport,v.Local.bCheck)
+	f.Intrinsic.Control.If(v.Local.bCheck,=,true)
+		f.Intrinsic.File.DeleteFile(v.Local.sFileExport)
+	f.Intrinsic.Control.EndIf
+	
+f.Intrinsic.Control.EndSelect
+
+gui.fmVendSpend.GsGcVendSpend.Export(V.Local.sFileExport,"xlsx")
+
+f.Intrinsic.File.Exists(v.Local.sFileExport,v.Local.bCheck)
+
+f.Intrinsic.Control.If(v.Local.bCheck,=,False)
+	f.Intrinsic.UI.Msgbox("Export cancelled (File does not exist)")
+	gui.fmVendSpend..SetFocus
+	gui.fmVendSpend..Enabled(True)
+	Function.Intrinsic.Control.UnblockEvents
+	f.Intrinsic.Control.ExitSub
+f.Intrinsic.Control.EndIf
+f.Intrinsic.Task.ShellExec(0,"",V.Local.sFileExport,"","",1)
+
+Function.Intrinsic.Control.UnblockEvents
+gui.fmVendSpend..SetFocus
+gui.fmVendSpend..Enabled(True)
+f.Intrinsic.Control.ExitSub
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.cmdExport_Click.End
+
+Program.Sub.cmdREFRESH_Click.Start
+'CLOSE OPEN TABLES AND REFRESH THE DATA
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+f.Intrinsic.UI.InvokeWaitDialog("Please Wait...Loading...","Loading...")
+gui.fmVendSpend..Enabled(false)
+
+'f.Intrinsic.Control.CallSub(Serialize)
+
+f.Intrinsic.Control.If(v.DataTable.dtVendSpend.Exists,=,true)
+	f.Data.DataView.Close("dtVendSpend","dvVendSpend")
+	f.Data.DataTable.Close("dtVendSpend")
+f.Intrinsic.Control.EndIf
+
+f.Intrinsic.Control.CallSub(ddlPopulate)
+f.Intrinsic.Control.CallSub(dtLoad)
+f.Intrinsic.Control.CallSub(gvFormat)
+
+gui.fmVendSpend..Enabled(true)
+f.Intrinsic.UI.CloseWaitDialog
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.cmdREFRESH_Click.End
+
+Program.Sub.Directory_Check.Start
+'CHECK FOR AND CREATE ANY DIRECTORIES NEEDED FOR 6768
+f.Intrinsic.Control.Try
+v.Local.sError.Declare
+
+v.Local.bRet.Declare
+v.Local.sFP.Declare
+
+f.Intrinsic.String.Build("{0}\CUSTOM\6768",v.Caller.GlobalDir,v.Local.sFP)
+f.Intrinsic.File.DirExists(v.Local.sFP,v.Local.bRet)
+f.Intrinsic.Control.If(v.Local.bRet,=,false)
+	f.Intrinsic.File.CreateDir(v.Local.sFP)
+f.Intrinsic.Control.EndIf
+v.Local.sFP.Set("")
+
+f.Intrinsic.String.Build("{0}\CUSTOM\6768\EXPORTS",v.Caller.GlobalDir,v.Local.sFP)
+f.Intrinsic.File.DirExists(v.Local.sFP,v.Local.bRet)
+f.Intrinsic.Control.If(v.Local.bRet,=,false)
+	f.Intrinsic.File.CreateDir(v.Local.sFP)
+f.Intrinsic.Control.EndIf
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.Directory_Check.End
+
+Program.Sub.ddlPopulate.Start
+'GENERATE DROPDOWN LIST(S) FOR DDL
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+gui.fmVendSpend.ddlVend.ClearItems
+v.Global.sDDL.Set("")
+
+gui.fmVendSpend.ddlVend.AddItem("ALL")
+
+f.ODBC.Connection!conx.OpenCompanyConnection
+
+f.ODBC.Connection!conx.OpenLocalRecordsetRO("DDL","select VENDOR from V_VENDOR_MASTER")
+f.Intrinsic.Control.DoUntil(v.ODBC.conx!DDL.EOF,=,true)
+	gui.fmVendSpend.ddlVend.AddItem(v.ODBC.conx!DDL.FieldValTrim!VENDOR)
+	f.ODBC.conx!DDL.MoveNext
+f.Intrinsic.Control.Loop
+f.ODBC.conx!DDL.Close
+
+f.ODBC.Connection!conx.Close
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.ddlPopulate.End
+
+Program.Sub.dtLoad.Start
+'LOADS DATA INTO THE VENDOR SPEND DATATABLE
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+v.Local.sSQL.Declare
+v.Local.sSQLRet.Declare
+v.Local.sRet.Declare
+v.Local.dSDateP.Declare
+v.Local.dEDateP.Declare
+v.Local.sStart.Declare
+v.Local.sEnd.Declare
+v.Local.sFilter.Declare
+v.Local.sPad.Declare
+v.Local.fTtl.Declare
+v.Local.i.Declare
+
+v.Local.dSDateP.Set(v.Screen.fmVendSpend!dtpSDate.Value)
+v.Local.dEDateP.Set(v.Screen.fmVendSpend!dtpEDate.Value)
+f.Intrinsic.String.Format(v.Screen.fmVendSpend!dtpSDate.Value,"YYYY-MM-DD",v.Local.sStart)
+f.Intrinsic.String.Format(v.Screen.fmVendSpend!dtpEDate.Value,"YYYY-MM-DD",v.Local.sEnd)
+
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!ddlVend.Text,=,"ALL")
+'	f.Intrinsic.String.Build(" and x.DATE_DUE_LINE >= '{0}' and x.DATE_DUE_LINE <= '{1}'",v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+'	f.Intrinsic.String.Build(" and x.DATE_RECEIVED >= '{0}' and x.DATE_RECEIVED <= '{1}'",v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+'	f.Intrinsic.String.Build(" and ((x.RECVD_DATE >= '{0}' and x.RECVD_DATE <= '{1}') or (x.DUE_DATE >= '{0}' and x.DUE_DATE <= '{1}'))",v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+	f.Intrinsic.String.Build(" and ((x.DATE_RECEIVED >= '{0}' and x.DATE_RECEIVED <= '{1}') or (x.DATE_DUE >= '{0}' and x.DATE_DUE <= '{1}'))",v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+f.Intrinsic.Control.Else
+'	f.Intrinsic.String.Build(" and y.VENDOR = '{0}' and x.DATE_DUE_LINE >= '{1}' and x.DATE_DUE_LINE <= '{2}'",v.Screen.fmVendSpend!ddlVend.Text,v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+'	f.Intrinsic.String.Build(" and x.VENDOR = '{0}' and x.DATE_RECEIVED >= '{1}' and x.DATE_RECEIVED <= '{2}'",v.Screen.fmVendSpend!ddlVend.Text,v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+'	f.Intrinsic.String.Build(" and x.VENDOR = '{0}' and ((x.RECVD_DATE >= '{1}' and x.RECVD_DATE <= '{2}') or (x.DUE_DATE >= '{1}' and x.DUE_DATE <= '{2}'))",v.Screen.fmVendSpend!ddlVend.Text,v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+	f.Intrinsic.String.Build(" and x.VENDOR = '{0}' and ((x.DATE_RECEIVED >= '{1}' and x.DATE_RECEIVED <= '{2}') or (x.DATE_DUE >= '{1}' and x.DATE_DUE <= '{2}'))",v.Screen.fmVendSpend!ddlVend.Text,v.Local.sStart,v.Local.sEnd,v.Local.sFilter)
+f.Intrinsic.Control.EndIf
+
+f.ODBC.Connection!conx.OpenCompanyConnection(999)
+
+'f.Intrinsic.String.Build("Select a.CODE_SORT, rtrim(x.PRODUCT_LINE) as PRODUCT_LINE, x.PART, rtrim(x.DESCRIPTION) as DESCRIPTION, (x.COST/x.QTY_ORDER)*x.QTY_RECEIVED as COST_RECV, x.VENDOR, rtrim(z.NAME_VENDOR) as NAME_VENDOR, x.PURCHASE_ORDER, x.RECORD_NO from V_PO_LINES as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where x.QTY_RECEIVED > '0' and PRODUCT_LINE <> ''{0} order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'f.Intrinsic.String.Build("Select x.RECEIVER_NO, x.DATE_RECEIVED, a.CODE_SORT, rtrim(a.PRODUCT_LINE) as PRODUCT_LINE, x.PART, rtrim(x.DESCRIPTION) as DESCRIPTION, x.QTY_RECEIVED, x.EXTENDED_COST as COST_RECV, x.VENDOR, rtrim(z.NAME_VENDOR) as NAME_VENDOR, x.PURCHASE_ORDER, x.PO_LINE as RECORD_NO from V_PO_RECEIVER as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where PRODUCT_LINE <> ''{0} order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'f.Intrinsic.String.Build("Select x.RECEIVER_NO, x.DUE_DATE, x.RECVD_DATE as DATE_RECEIVED, rtrim(' ') as CODE_SORT, rtrim(x.PROD_LINE) as PRODUCT_LINE, x.PART, rtrim(x.DESCRIPTION) as DESCRIPTION, x.RECVD_QTY as QTY_RECEIVED, x.EXTENSION as COST_RECV, x.VENDOR, rtrim(x.VENDOR_NAME) as NAME_VENDOR, right(concat('0000000',x.PO_NUMBER),7) as PURCHASE_ORDER, right(concat('000',x.PO_LINE),3) as RECORD_NO from V_PO_TRANSACTION as x where x.PROD_LINE <> '' and RECVD_QTY <> '0'{0} order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+f.Intrinsic.String.Build("Select x.RECEIVER_NO, x.DATE_DUE as DUE_DATE, x.DATE_RECEIVED, rtrim(' ') as CODE_SORT, rtrim(x.PRODUCT_LINE) as PRODUCT_LINE, x.PART, rtrim(x.DESCRIPTION) as DESCRIPTION, x.QTY_RECEIVED, x.EXTENSION as COST_RECV, x.VENDOR, rtrim(y.NAME_VENDOR) as NAME_VENDOR, x.PURCHASE_ORDER, x.PO_LINE as RECORD_NO from V_PO_HISTORY as x left join V_VENDOR_MASTER as y on y.VENDOR = x.VENDOR where x.PRODUCT_LINE <> '' and x.QTY_RECEIVED <> '0'{0} order by x.PART",v.Local.sFilter,v.Local.sSQL)
+
+f.Data.DataTable.CreateFromSQL("dtVendSpend","conx",v.Local.sSQL,true)
+
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkSort.Value,=,1)
+
+'	f.Intrinsic.String.Build("Select rtrim(x.PRODUCT_LINE) as PRODUCT_LINE, sum((x.COST/x.QTY_ORDER)*x.QTY_RECEIVED) as COST_RECV from V_PO_LINES as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where x.QTY_RECEIVED > '0' and PRODUCT_LINE <> ''{0} group by PRODUCT_LINE order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'	f.Intrinsic.String.Build("Select rtrim(a.PRODUCT_LINE) as PRODUCT_LINE, sum(x.EXTENDED_COST) as COST_RECV from V_PO_RECEIVER as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where PRODUCT_LINE <> ''{0} group by PRODUCT_LINE order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'	f.Intrinsic.String.Build("Select rtrim(x.PRODUCT_LINE) as PRODUCT_LINE, sum(x.EXTENSION) as COST_RECV from V_PO_TRANSACTION as x where x.PROD_LINE <> '' and RECVD_QTY <> '0'{0} group by PRODUCT_LINE order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+	f.Intrinsic.String.Build("Select rtrim(x.PRODUCT_LINE) as PRODUCT_LINE, sum(x.EXTENSION) as COST_RECV from V_PO_HISTORY as x where x.PRODUCT_LINE <> '' and x.QTY_RECEIVED <> '0'{0} group by PRODUCT_LINE order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+	f.Data.DataTable.CreateFromSQL("dtVendRank","conx",v.Local.sSQL,true)
+
+f.Intrinsic.Control.Else
+
+'	f.Intrinsic.String.Build("Select y.VENDOR, sum((x.COST/x.QTY_ORDER)*x.QTY_RECEIVED) as COST_RECV from V_PO_LINES as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where x.QTY_RECEIVED > '0' and x.PRODUCT_LINE <> ''{0} group by y.VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'	f.Intrinsic.String.Build("Select x.VENDOR, sum(x.EXTENDED_COST) as COST_RECV from V_PO_RECEIVER as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where PRODUCT_LINE <> ''{0} group by x.VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'	f.Intrinsic.String.Build("Select x.VENDOR, sum(x.EXTENSION) as COST_RECV from V_PO_TRANSACTION as x where x.PROD_LINE <> '' and RECVD_QTY <> '0'{0} group by x.VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+	f.Intrinsic.String.Build("Select x.VENDOR, sum(x.EXTENSION) as COST_RECV from V_PO_HISTORY as x where x.PRODUCT_LINE <> '' and x.QTY_RECEIVED <> '0'{0} group by x.VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+	f.Data.DataTable.CreateFromSQL("dtVendRank","conx",v.Local.sSQL,true)
+
+f.Intrinsic.Control.EndIf
+
+'f.Intrinsic.String.Build("Select rtrim(x.PRODUCT_LINE) as PRODUCT_LINE, rtrim(z.NAME_VENDOR) as NAME_VENDOR, sum((x.COST/x.QTY_ORDER)*x.QTY_RECEIVED) as COST_RECV from V_PO_LINES as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where x.QTY_RECEIVED > '0' and PRODUCT_LINE <> ''{0} group by PRODUCT_LINE, NAME_VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'f.Intrinsic.String.Build("Select rtrim(a.PRODUCT_LINE) as PRODUCT_LINE, rtrim(z.NAME_VENDOR) as NAME_VENDOR, sum(x.EXTENDED_COST) as COST_RECV from V_PO_RECEIVER as x left join V_PO_HEADER as y on y.PURCHASE_ORDER = x.PURCHASE_ORDER left join V_VENDOR_MASTER as z on z.VENDOR = y.VENDOR left join V_INVENTORY_ALL as a on a.PART = x.PART where PRODUCT_LINE <> ''{0} group by PRODUCT_LINE, NAME_VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+'f.Intrinsic.String.Build("Select rtrim(x.PROD_LINE) as PRODUCT_LINE, rtrim(x.VENDOR_NAME) as NAME_VENDOR, sum(x.EXTENSION) as COST_RECV from V_PO_TRANSACTION as x where x.PROD_LINE <> '' and RECVD_QTY <> '0'{0} group by PRODUCT_LINE, NAME_VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+f.Intrinsic.String.Build("Select rtrim(x.PRODUCT_LINE) as PRODUCT_LINE, rtrim(y.NAME_VENDOR) as NAME_VENDOR, sum(x.EXTENSION) as COST_RECV from V_PO_HISTORY as x left join V_VENDOR_MASTER as y on y.VENDOR = x.VENDOR where x.PRODUCT_LINE <> '' and x.QTY_RECEIVED <> '0'{0} group by PRODUCT_LINE, NAME_VENDOR order by COST_RECV desc",v.Local.sFilter,v.Local.sSQL)
+f.Data.DataTable.CreateFromSQL("dtVendTop","conx",v.Local.sSQL,true)
+
+f.ODBC.Connection!conx.Close
+
+'ADD DICTIONARY COLUMNS
+f.Data.DataTable.AddColumn("dtVendSpend","NAME_PL","string")
+f.Data.DataTable.AddColumn("dtVendSpend","SPEND_TTL","float")
+f.Data.DataTable.AddColumn("dtVendSpend","RANKED","string")
+f.Data.DataTable.AddColumn("dtVendSpend","VENDOR_TOP","string")
+f.Data.DataTable.Compute("dtVendSpend","Sum(COST_RECV)","",v.Local.fTtl)
+f.Data.DataTable.SetValue("dtVendSpend",-1,"SPEND_TTL",v.Local.fTtl)
+
+f.Data.DataTable.AddColumn("dtVendRank","RANKED_F","float")
+f.Data.DataTable.SetValue("dtVendRank",-1,"RANKED_F",1)
+f.Data.DataTable.AddRunningTotalColumn("dtVendRank","RANKED_F",0,"+","RANKED_F")
+f.Data.DataTable.AddColumn("dtVendRank","RANKED","string")
+
+f.Intrinsic.Control.For(v.Local.i,0,v.DataTable.dtVendRank.RowCount--,1)
+	f.Intrinsic.String.LPad(v.DataTable.dtVendRank(v.Local.i).RANKED_F!FieldVal,"0",2,v.Local.sPad)
+	f.Data.DataTable.SetValue("dtVendRank",v.Local.i,"RANKED",v.Local.sPad)
+f.Intrinsic.Control.Next(v.Local.i)
+
+'POPULATE DICTIONARY COLUMNS
+f.Intrinsic.Control.CallSub(Dictionary_Load)
+
+'ADD EXPRESSION COLUMNS
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkSort.Value,=,1)
+	f.Data.DataTable.AddExpressionColumn("dtVendSpend","PL_RANK","string","RANKED+' Product: '+NAME_PL+' Top Vendor: '+VENDOR_TOP")
+f.Intrinsic.Control.Else
+	f.Data.DataTable.AddExpressionColumn("dtVendSpend","PL_RANK","string","RANKED+' Vendor: '+NAME_VENDOR")
+f.Intrinsic.Control.EndIf
+
+f.Data.DataTable.AddExpressionColumn("dtVendSpend","SPEND_PCT","float","COST_RECV/SPEND_TTL*100")
+
+'CREATE DATAVIEW TO POPULATE GRIDVIEW
+f.Data.DataView.Create("dtVendSpend","dvVendSpend",22)
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.dtLoad.End
+
+Program.Sub.Dictionary_Load.Start
+'POPULATE DICTIONARY COLUMNS
+f.Intrinsic.Control.Try
+v.Local.sError.Declare
+
+f.ODBC.Connection!conx.OpenCompanyConnection
+
+F.Data.Dictionary.CreateFromSQL("TYPE","conx","select rtrim(PROD_LINE), rtrim(PL_NAME) as NAME_PL FROM V_PL_MASTER")
+f.Data.Dictionary.SetDefaultReturn("TYPE","")
+f.Data.DataTable.FillFromDictionary("dtVendSpend","TYPE","PRODUCT_LINE","NAME_PL")
+f.Data.Dictionary.Close("TYPE")
+
+f.ODBC.Connection!conx.Close
+
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkSort.Value,=,1)
+	f.Data.Dictionary.CreateFromDatatable("RANK","dtVendRank","PRODUCT_LINE","RANKED")
+	f.Data.Dictionary.SetDefaultReturn("RANK","0")
+	f.Data.DataTable.FillFromDictionary("dtVendSpend","RANK","PRODUCT_LINE","RANKED")
+f.Intrinsic.Control.Else
+	f.Data.Dictionary.CreateFromDatatable("RANK","dtVendRank","VENDOR","RANKED")
+	f.Data.Dictionary.SetDefaultReturn("RANK","0")
+	f.Data.DataTable.FillFromDictionary("dtVendSpend","RANK","VENDOR","RANKED")
+f.Intrinsic.Control.EndIf
+
+f.Data.Dictionary.Close("RANK")
+f.Data.DataTable.Close("dtVendRank")
+
+f.Data.Dictionary.CreateFromDatatable("TOP","dtVendTop","PRODUCT_LINE","NAME_VENDOR")
+f.Data.Dictionary.SetDefaultReturn("TOP","")
+f.Data.DataTable.FillFromDictionary("dtVendSpend","TOP","PRODUCT_LINE","VENDOR_TOP")
+f.Data.Dictionary.Close("TOP")
+f.Data.DataTable.Close("dtVendTop")
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.Dictionary_Load.End
+
+Program.Sub.gvFormat.Start
+'GENERATE FORMATTING FOR ALL OF THE COLUMNS IN THE GRIDVIEW
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+v.Local.i.Declare
+
+gui.fmVendSpend.GsGcVendSpend.Visible(false)
+
+gui.fmVendSpend.GsGcVendSpend.SuspendLayout
+
+gui.fmVendSpend.GsGcVendSpend.AddGridviewFromDataview("gvVendSpend","dtVendSpend","dvVendSpend")
+gui.fmVendSpend.GsGcVendSpend.MainView("gvVendSpend")
+
+gui.fmVendSpend.GsGcVendSpend.SetGridviewProperty("gvVendSpend","OptionsDetailShowDetailTabs",True)
+gui.fmVendSpend.GsGcVendSpend.SetGridviewProperty("gvVendSpend","Showgrouppanel",True)
+
+gui.fmVendSpend.GsGcVendSpend.ClearGrouping("gvVendSpend")
+
+'f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkSort.Value,=,1)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","GroupIndex",0)
+'f.Intrinsic.Control.ElseIf(v.Screen.fmVendSpend!chkVend.Value,=,1)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","GroupIndex",0)
+'f.Intrinsic.Control.EndIf
+
+gui.fmVendSpend.GsGcVendSpend.AddGridGroupSummaryItem("gvVendSpend","COST_RECV","COST_RECV","Sum","Spend: ","","c")
+gui.fmVendSpend.GsGcVendSpend.AddGridGroupSummaryItem("gvVendSpend","SPEND_PCT","SPEND_PCT","Sum","% of Total: ","%","n2")
+
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","Caption","")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","HeaderFontBold","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","HeaderHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","CellHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","MinWidth",)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","MaxWidth",)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","DisplayCustomNumeric","$###,##0.00")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","ReadOnly","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","AllowEdit","FALSE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","","VisibleIndex",v.Local.i)
+'f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RANKED","Visible",false)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR_TOP","Visible",false)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","Caption","Receiver")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","CellHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","MinWidth",65)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECEIVER_NO","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","Caption","Date Due")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","CellHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","MinWidth",65)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","DisplayCustomDateTime","d")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DUE_DATE","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","Caption","Date Recv.")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","CellHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","MinWidth",65)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","DisplayCustomDateTime","d")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DATE_RECEIVED","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","Caption","Sort Code")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","CellHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","MinWidth",65)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","CODE_SORT","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","Visible",false)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","Caption","PL")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","HeaderFontBold","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","HeaderHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","CellHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","MinWidth",45)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","ReadOnly","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","AllowEdit","FALSE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PRODUCT_LINE","VisibleIndex",v.Local.i)
+'f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","Visible",false)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","Caption","Product")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","HeaderFontBold","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","HeaderHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","CellHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","MinWidth",85)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","ReadOnly","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","AllowEdit","FALSE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_PL","VisibleIndex",v.Local.i)
+'f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","Visible",false)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","Caption","Rank")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","HeaderFontBold","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","HeaderHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","CellHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","MinWidth",85)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","ReadOnly","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","AllowEdit","FALSE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PL_RANK","VisibleIndex",v.Local.i)
+'f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","Caption","Part")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","CellHAlignment","LEFT")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","MinWidth",85)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PART","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","Caption","Description")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","CellHAlignment","LEFT")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","MinWidth",125)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","DESCRIPTION","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","Caption","Qty Recv.")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","CellHAlignment","FAR")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","MinWidth",85)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","DisplayCustomNumeric","###,##0.00")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","QTY_RECEIVED","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","Caption","$'s Spent")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","CellHAlignment","FAR")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","MinWidth",85)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","DisplayCustomNumeric","$###,##0.00")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.AddSummaryItem("gvVendSpend","COST_RECV","TOTAL SPEND:","Sum","TTL SPEND:","","C")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","COST_RECV","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","Caption","Vendor #")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","CellHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","MinWidth",65)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","VENDOR","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","Caption","Vendor Name")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","CellHAlignment","LEFT")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","MinWidth",105)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","NAME_VENDOR","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","Caption","PO")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","CellHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","MinWidth",85)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","PURCHASE_ORDER","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","Caption","Line")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","CellHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","MinWidth",35)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","RECORD_NO","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","Visible",false)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","Caption","Total $ Spent")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","HeaderFontBold","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","HeaderHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","CellHAlignment","CENTER")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","MinWidth",65)
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","DisplayCustomNumeric","$###,##0.00")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","ReadOnly","TRUE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","AllowEdit","FALSE")
+'gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_TTL","VisibleIndex",v.Local.i)
+'f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","Caption","% Spent")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","HeaderFontBold","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","HeaderHAlignment","CENTER")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","CellHAlignment","FAR")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","MinWidth",65)
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","DisplayCustomNumeric","###,##0.00")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","ReadOnly","TRUE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","AllowEdit","FALSE")
+gui.fmVendSpend.GsGcVendSpend.SetColumnProperty("gvVendSpend","SPEND_PCT","VisibleIndex",v.Local.i)
+f.Intrinsic.Math.Add(v.local.i,1,v.Local.i)
+
+gui.fmVendSpend.GsGcVendSpend.ResumeLayout
+gui.fmVendSpend.GsGcVendSpend.Visible(true)
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.gvFormat.End
+
+Program.Sub.fmVendSpend_UnLoad.Start
+'CLOSE EVERYTHING AND UNLOAD THE DASHBOARD
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+gui.fmVendSpend..Visible(false)
+
+'f.Intrinsic.Control.CallSub(Serialize)
+
+f.Data.DataView.Close("dtVendSpend","dvVendSpend")
+f.Data.DataTable.Close("dtVendSpend")
+
+f.Intrinsic.Control.End
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.fmVendSpend_UnLoad.End
+
+Program.Sub.chkSort_Click.Start
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+f.Intrinsic.Control.SelectCase(v.Screen.fmVendSpend!chkSort.Value)
+
+f.Intrinsic.Control.Case(1)
+
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkVend.Value,=,1)
+	gui.fmVendSpend.chkVend.Value(0)
+	v.Global.sRptCat.Set("D")
+f.Intrinsic.Control.EndIf
+
+f.Intrinsic.Control.Case(0)
+
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkVend.Value,=,0)
+	gui.fmVendSpend.chkVend.Value(1)
+	v.Global.sRptCat.Set("R")
+f.Intrinsic.Control.EndIf
+
+f.Intrinsic.Control.EndSelect
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.chkSort_Click.End
+
+Program.Sub.chkVend_Click.Start
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+f.Intrinsic.Control.SelectCase(v.Screen.fmVendSpend!chkVend.Value)
+
+f.Intrinsic.Control.Case(1)
+
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkSort.Value,=,1)
+	gui.fmVendSpend.chkSort.Value(0)
+	v.Global.sRptCat.Set("R")
+f.Intrinsic.Control.EndIf
+
+f.Intrinsic.Control.Case(0)
+
+f.Intrinsic.Control.If(v.Screen.fmVendSpend!chkSort.Value,=,0)
+	gui.fmVendSpend.chkSort.Value(1)
+	v.Global.sRptCat.Set("D")
+f.Intrinsic.Control.EndIf
+
+f.Intrinsic.Control.EndSelect
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.chkVend_Click.End
+
+Program.Sub.ddlVend_LostFocus.Start
+f.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+v.Local.sSQL.Declare
+v.Local.sRet.Declare
+
+f.ODBC.Connection!conx.OpenCompanyConnection
+
+f.Intrinsic.String.Build("Select rtrim(NAME_VENDOR) as NAME from V_VENDOR_MASTER where VENDOR = '{0}'",v.Screen.fmVendSpend!ddlVend.Text,v.Local.sSQL)
+f.ODBC.Connection!conx.ExecuteandReturn(v.Local.sSQL,v.Local.sRet)
+
+f.Intrinsic.Control.If(v.Ambient.ExecuteandReturnEOF.not)
+	gui.fmVendSpend.txtVend.Text(v.Local.sRet)
+f.Intrinsic.Control.ElseIf(v.Screen.fmVendSpend!ddlVend.Text,=,"ALL")
+	gui.fmVendSpend.txtVend.Text("All Vendors")
+f.Intrinsic.Control.Else
+	gui.fmVendSpend.txtVend.Text("")
+f.Intrinsic.Control.EndIf
+
+f.ODBC.Connection!conx.Close
+
+f.Intrinsic.Control.Catch
+	f.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	f.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End 
+f.Intrinsic.Control.EndTry
+Program.Sub.ddlVend_LostFocus.End
